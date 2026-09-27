@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0f14">
+<title>ECO SPORT ADS - Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg-main: #f4f7f9;
+    --bg-sidebar: #ffffff;
+    --bg-card: #ffffff;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+    --border-color: #e2e8f0;
+    --primary: #4299e1;
+    --primary-dark: #3182ce;
+    --success: #48bb78;
+    --danger: #f56565;
+    --warning: #ed8936;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.03);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    overflow: hidden;
+  }
+
+  /* LOGIN SCREEN */
+  .login-screen {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0b0f14 0%, #1a202c 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .login-screen::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(66,153,225,0.2) 0%, transparent 70%);
+    top: -200px; left: -200px;
+  }
+  .login-screen::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(72,187,120,0.15) 0%, transparent 70%);
+    bottom: -150px; right: -100px;
+  }
+  .login-card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    width: 420px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    z-index: 10;
+    text-align: center;
+  }
+  .login-card .logo {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  .login-card .logo span { color: var(--primary); }
+  .login-card h1 { font-size: 20px; margin-bottom: 8px; font-weight: 700; }
+  .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+  
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #fff;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(66,153,225,0.15);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .btn.primary { background: var(--primary); color: #fff; box-shadow: 0 4px 6px rgba(66,153,225,0.2); }
+  .btn.primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn.success { background: var(--success); color: #fff; }
+  .btn.success:hover { background: #38a169; }
+  .btn.danger { background: var(--danger); color: #fff; }
+  .btn.danger:hover { background: #e53e3e; }
+  .btn.ghost { background: transparent; border: 1px solid var(--border-color); color: var(--text-dark); }
+  .btn.ghost:hover { background: #f7fafc; }
+  .btn.small { padding: 6px 12px; font-size: 12px; }
+  .btn.block { width: 100%; margin-top: 8px; }
+
+  .msg { font-size: 12px; color: var(--danger); margin-top: 15px; min-height: 15px; }
+  small { display: block; margin-top: 20px; color: #a0aec0; font-size: 11px; }
+
+  /* APP LAYOUT */
+  .hidden { display: none !important; }
+  
+  #app {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    flex-shrink: 0;
+  }
+  .brand {
+    font-size: 22px;
+    font-weight: 800;
+    padding: 0 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand small { font-size: 10px; background: var(--primary); color: #fff; padding: 2px 6px; border-radius: 4px; margin: 0 0 0 4px; }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: #f7fafc; color: var(--text-dark); }
+  .nav-item.active { background: rgba(66,153,225,0.1); color: var(--primary); font-weight: 600; }
+  .nav-item i { width: 20px; text-align: center; }
+
+  /* MAIN CONTENT */
+  .main-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    height: 70px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+  }
+  .user-info { display: flex; align-items: center; gap: 16px; }
+  .avatar {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  #userEmail { font-size: 14px; font-weight: 500; }
+
+  .content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 32px;
+    background: var(--bg-main);
+  }
+
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .active-page { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+  }
+  .page-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .page-head p { color: var(--text-muted); font-size: 14px; }
+
+  /* CARDS & PANELS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .bg-blue { background: rgba(66,153,225,0.1); color: var(--primary); }
+  .bg-green { background: rgba(72,187,120,0.1); color: var(--success); }
+  .bg-orange { background: rgba(237,137,72,0.1); color: var(--warning); }
+  .bg-purple { background: rgba(128,90,213,0.1); color: #805ad5; }
+  
+  .stat-info b { font-size: 24px; font-weight: 700; display: block; line-height: 1.2; }
+  .stat-info span { font-size: 13px; color: var(--text-muted); }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  
+  .panel {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .panel h2 { font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .panel p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
+
+  /* LISTS */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .card-img { width: 100%; height: 160px; object-fit: cover; background: #edf2f7; }
+  .card-body { padding: 16px; }
+  .card-body h3 { font-size: 16px; margin-bottom: 8px; }
+  .card-body p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+  .list-item {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+  .list-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  /* MODALS */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-card {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    padding: 32px;
+    position: relative;
+    animation: slideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-card h2 { margin-bottom: 20px; font-size: 20px; }
+  .close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: #f7fafc;
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .close:hover { background: #edf2f7; color: var(--danger); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .content { padding: 16px; }
+    .page-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="logo">ECO <span>SPORT</span></div>
+    <h1>Selamat Datang Kembali</h1>
+    <p>Masuk untuk mengelola iklan dan katalog jersey Anda.</p>
+    <div class="form-group">
+      <input id="email" type="email" placeholder="Email Supabase">
+    </div>
+    <div class="form-group">
+      <input id="password" type="password" placeholder="Password">
+    </div>
+    <button id="loginBtn" class="btn primary block">Masuk</button>
+    <button id="registerBtn" class="btn ghost block">Daftar Akun Baru</button>
+    <div id="authMsg" class="msg"></div>
+    <small>Isi konfigurasi Supabase di <b>app.js</b> sebelum digunakan.</small>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="brand">ECO SPORT <small>ADS</small></div>
+    <button class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button>
+    <button class="nav-item" data-page="products"><i class="fas fa-tshirt"></i> Katalog Jersey</button>
+    <button class="nav-item" data-page="ads"><i class="fas fa-bullhorn"></i> Materi Iklan</button>
+    <button class="nav-item" data-page="generator"><i class="fas fa-magic"></i> Generator Iklan</button>
+    <button class="nav-item" data-page="schedule"><i class="fas fa-calendar-alt"></i> Jadwal Iklan</button>
+    <button class="nav-item" data-page="customers"><i class="fas fa-users"></i> Pelanggan</button>
+    <button class="nav-item" data-page="settings"><i class="fas fa-cog"></i> Pengaturan</button>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div></div>
+      <div class="user-info">
+        <div class="avatar" id="avatarText">A</div>
+        <span id="userEmail">admin@ecosport.com</span>
+        <button id="logoutBtn" class="btn danger small">Keluar</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="page active-page">
+        <div class="page-head">
+          <div><h1>Dashboard</h1><p>Pusat kontrol pemasaran ECO SPORT.</p></div>
+          <button class="btn primary" onclick="showPage('generator')"><i class="fas fa-plus"></i> Buat Iklan</button>
+        </div>
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon bg-blue"><i class="fas fa-tshirt"></i></div>
+            <div class="stat-info"><b id="statProducts">0</b><span>Total Produk</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon bg-green"><i class="fas fa-bullhorn"></i></div>
+            <div class="stat-info"><b id="statAds">0</b><span>Materi Iklan</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon bg-orange"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-info"><b id="statSchedules">0</b><span>Jadwal Aktif</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon bg-purple"><i class="fas fa-users"></i></div>
+            <div class="stat-info"><b id="statCustomers">0</b><span>Pelanggan</span></div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h2><i class="fas fa-rocket text-blue"></i> Fokus Penjualan</h2>
+            <p>Gunakan generator iklan untuk membuat caption yang siap diposting ke Facebook, Instagram, TikTok, dan WhatsApp.</p>
+            <button class="btn primary" onclick="showPage('generator')">Buat Caption Sekarang</button>
+          </div>
+          <div class="panel">
+            <h2><i class="fas fa-mobile-alt text-green"></i> Pesanan WhatsApp</h2>
+            <p>Arahkan calon pembeli langsung ke WhatsApp Admin ECO SPORT untuk respons cepat.</p>
+            <a id="waDash" class="btn success" target="_blank"><i class="fab fa-whatsapp"></i> Buka WhatsApp</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section id="products" class="page">
+        <div class="page-head">
+          <div><h1>Katalog Jersey</h1><p>Kelola produk yang ingin dipromosikan.</p></div>
+          <button class="btn primary" onclick="openModal('productModal')"><i class="fas fa-plus"></i> Tambah Produk</button>
+        </div>
+        <div id="productsList" class="cards"></div>
+      </section>
+
+      <!-- ADS -->
+      <section id="ads" class="page">
+        <div class="page-head">
+          <div><h1>Materi Iklan</h1><p>Simpan caption dan materi promosi.</p></div>
+          <button class="btn primary" onclick="openModal('adModal')"><i class="fas fa-plus"></i> Materi Iklan</button>
+        </div>
+        <div id="adsList" class="list"></div>
+      </section>
+
+      <!-- GENERATOR -->
+      <section id="generator" class="page">
+        <div class="page-head">
+          <div><h1>Generator Iklan</h1><p>Buat caption promosi siap copy berbasis AI.</p></div>
+        </div>
+        <div class="panel">
+          <div class="grid2" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+              <div class="form-group"><label>Jenis produk</label><input id="gProduct" placeholder="Contoh: Jersey Futsal Custom"></div>
+              <div class="form-group"><label>Target pelanggan</label><input id="gTarget" placeholder="Contoh: Tim futsal, sekolah"></div>
+              <div class="form-group"><label>Keunggulan</label><input id="gBenefit" placeholder="Contoh: bahan nyaman, desain custom"></div>
+            </div>
+            <div>
+              <div class="form-group"><label>Promo / harga</label><input id="gPromo" placeholder="Contoh: Harga mulai Rp89.000"></div>
+              <div class="form-group"><label>Gaya iklan</label>
+                <select id="gStyle">
+                  <option>Menarik & profesional</option>
+                  <option>Agresif untuk jualan</option>
+                  <option>Santai & kekinian</option>
+                  <option>Singkat untuk WhatsApp Status</option>
+                </select>
+              </div>
+              <button class="btn primary block" onclick="generateAd()"><i class="fas fa-magic"></i> Generate Iklan</button>
+            </div>
+          </div>
+          <hr style="border:0; border-top:1px solid var(--border-color); margin: 24px 0;">
+          <textarea id="generated" rows="10" placeholder="Hasil iklan akan muncul di sini..." style="background:#f7fafc; border-radius:8px;"></textarea>
+          <div style="margin-top:16px; display:flex; gap:12px;">
+            <button class="btn ghost" onclick="copyGenerated()"><i class="fas fa-copy"></i> Copy Text</button>
+            <button class="btn success" onclick="saveGenerated()"><i class="fas fa-save"></i> Simpan ke Materi</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE -->
+      <section id="schedule" class="page">
+        <div class="page-head">
+          <div><h1>Jadwal Iklan</h1><p>Catat jadwal posting dan statusnya.</p></div>
+          <button class="btn primary" onclick="openModal('scheduleModal')"><i class="fas fa-plus"></i> Jadwal</button>
+        </div>
+        <div id="scheduleList" class="list"></div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section id="customers" class="page">
+        <div class="page-head">
+          <div><h1>Pelanggan</h1><p>Kelola calon pelanggan dan pesanan.</p></div>
+          <button class="btn primary" onclick="openModal('customerModal')"><i class="fas fa-plus"></i> Pelanggan</button>
+        </div>
+        <div id="customersList" class="list"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="settings" class="page">
+        <div class="page-head">
+          <div><h1>Pengaturan</h1><p>Informasi kontak penjualan.</p></div>
+        </div>
+        <div class="panel" style="max-width: 600px;">
+          <div class="form-group"><label>Nomor WhatsApp (format internasional)</label><input id="waNumber" placeholder="628xxxxxxxxxx"></div>
+          <div class="form-group"><label>Nama usaha</label><input id="businessName" value="ECO SPORT"></div>
+          <div class="form-group"><label>Alamat / area layanan</label><input id="businessArea" placeholder="Contoh: OKU Timur"></div>
+          <button class="btn primary" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+          <div id="settingsMsg" class="msg" style="color: var(--success);"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="productModal" class="modal">
+  <div class="modal-card">
+    <button class="close" onclick="closeModal('productModal')"><i class="fas fa-times"></i></button>
+    <h2>Tambah Produk</h2>
+    <div class="form-group"><input id="pName" placeholder="Nama produk"></div>
+    <div class="form-group"><input id="pPrice" placeholder="Harga"></div>
+    <div class="form-group"><input id="pMin" placeholder="Minimal order"></div>
+    <div class="form-group"><input id="pImage" placeholder="URL foto jersey"></div>
+    <div class="form-group"><textarea id="pDesc" placeholder="Deskripsi"></textarea></div>
+    <button class="btn primary block" onclick="addProduct()">Simpan Produk</button>
+  </div>
+</div>
+
+<div id="adModal" class="modal">
+  <div class="modal-card">
+    <button class="close" onclick="closeModal('adModal')"><i class="fas fa-times"></i></button>
+    <h2>Materi Iklan</h2>
+    <div class="form-group"><input id="aTitle" placeholder="Judul iklan"></div>
+    <div class="form-group"><select id="aPlatform"><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>WhatsApp</option></select></div>
+    <div class="form-group"><textarea id="aCaption" placeholder="Caption"></textarea></div>
+    <button class="btn primary block" onclick="addAd()">Simpan</button>
+  </div>
+</div>
+
+<div id="scheduleModal" class="modal">
+  <div class="modal-card">
+    <button class="close" onclick="closeModal('scheduleModal')"><i class="fas fa-times"></i></button>
+    <h2>Jadwal Iklan</h2>
+    <div class="form-group"><input id="sTitle" placeholder="Nama kampanye"></div>
+    <div class="form-group"><select id="sPlatform"><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>WhatsApp</option></select></div>
+    <div class="form-group"><input id="sDate" type="datetime-local"></div>
+    <div class="form-group"><select id="sStatus"><option>Terjadwal</option><option>Selesai</option><option>Draft</option></select></div>
+    <button class="btn primary block" onclick="addSchedule()">Simpan</button>
+  </div>
+</div>
+
+<div id="customerModal" class="modal">
+  <div class="modal-card">
+    <button class="close" onclick="closeModal('customerModal')"><i class="fas fa-times"></i></button>
+    <h2>Tambah Pelanggan</h2>
+    <div class="form-group"><input id="cName" placeholder="Nama"></div>
+    <div class="form-group"><input id="cPhone" placeholder="Nomor WhatsApp"></div>
+    <div class="form-group"><input id="cProduct" placeholder="Produk diminati"></div>
+    <div class="form-group"><select id="cStatus"><option>Prospek</option><option>Sudah Pesan</option><option>Selesai</option></select></div>
+    <div class="form-group"><textarea id="cNote" placeholder="Catatan"></textarea></div>
+    <button class="btn primary block" onclick="addCustomer()">Simpan</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // --- KONFIGURASI SUPABASE ---
+  // Ganti dengan URL dan Key Supabase Anda
+  const SUPABASE_URL = "https://your-project.supabase.co";
+  const SUPABASE_KEY = "your-anon-key";
+  let supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // --- DUMMY DATA FALLBACK ---
+  // Data ini digunakan jika Supabase belum dikonfigurasi (untuk demo UI)
+  let isDemoMode = SUPABASE_URL.includes("your-project");
+  let db = {
+    products: [
+      {id: 1, name: "Jersey Voli Premium", price: "85000", min: "10 pcs", img: "https://images.unsplash.com/photo-1577471488278-16eec37ffcc2?w=500", desc: "Bahan dryfit, custom nama & nomor."}
+    ],
+    ads: [
+      {id: 1, title: "Promo Akhir Tahun", platform: "Instagram", caption: "🔥 Dapatkan jersey impian tim Anda! 🔥 Discount 10% untuk pemesanan minimal 20 pcs. Buruan pesan sebelum kehabisan! 🏃‍♂️💨 . #EcoSport #JerseyCustom"}
+    ],
+    schedules: [
+      {id: 1, title: "Posting Produk Baru", platform: "Facebook", date: "2024-01-20T10:00", status: "Terjadwal"}
+    ],
+    customers: [
+      {id: 1, name: "Budi Santoso", phone: "08123456789", product: "Jersey Futsal", status: "Prospek", note: "Menunggu desain"}
+    ],
+    settings: { wa: "6285768068165", name: "ECO SPORT", area: "OKU Timur" }
+  };
+
+  // --- UI CONTROLLERS ---
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(pageId).classList.add('active-page');
+    
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+    
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => showPage(btn.dataset.page));
+  });
+
+  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  // --- AUTH ---
+  async function login() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('password').value;
+    
+    if(isDemoMode) {
+      document.getElementById('authMsg').innerText = "Mode Demo: Klik Masuk tanpa perlu kredensial.";
+      enterApp("demo@ecosport.com");
+      return;
+    }
+
+    // Kode Supabase asli
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      document.getElementById('authMsg').innerText = error.message;
+    } else {
+      enterApp(data.user.email);
+    }
+  }
+
+  function enterApp(email) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('userEmail').innerText = email;
+    document.getElementById('avatarText').innerText = email.charAt(0).toUpperCase();
+    
+    // Load Data
+    loadDashboard();
+    loadProducts();
+    loadAds();
+    loadSchedules();
+    loadCustomers();
+    loadSettings();
+  }
+
+  function logout() {
+    if(!isDemoMode) supabase.auth.signOut();
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+  }
+
+  // --- LOADERS & RENDERERS ---
+  function loadDashboard() {
+    document.getElementById('statProducts').innerText = db.products.length;
+    document.getElementById('statAds').innerText = db.ads.length;
+    document.getElementById('statSchedules').innerText = db.schedules.length;
+    document.getElementById('statCustomers').innerText = db.customers.length;
+    document.getElementById('waDash').href = `https://wa.me/${db.settings.wa}`;
+  }
+
+  function loadProducts() {
+    const list = document.getElementById('productsList');
+    list.innerHTML = db.products.map(p => `
+      <div class="product-card">
+        <img src="${p.img || 'https://via.placeholder.com/300x200'}" class="card-img" alt="${p.name}">
+        <div class="card-body">
+          <h3>${p.name}</h3>
+          <p>${p.desc || ''}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+            <span class="badge bg-blue">Rp ${p.price || '-'}</span>
+            <button class="btn danger small" onclick="deleteItem('products', ${p.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function loadAds() {
+    const list = document.getElementById('adsList');
+    list.innerHTML = db.ads.map(a => `
+      <div class="list-item">
+        <div>
+          <h4 style="margin-bottom:4px;">${a.title}</h4>
+          <small style="color:var(--text-muted);">${a.platform} • ${a.caption.substring(0, 50)}...</small>
+        </div>
+        <button class="btn danger small" onclick="deleteItem('ads', ${a.id})"><i class="fas fa-trash"></i></button>
+      </div>
+    `).join('') || '<p style="color:var(--text-muted);">Belum ada materi iklan.</p>';
+  }
+
+  function loadSchedules() {
+    const list = document.getElementById('scheduleList');
+    list.innerHTML = db.schedules.map(s => `
+      <div class="list-item">
+        <div>
+          <h4 style="margin-bottom:4px;">${s.title}</h4>
+          <small style="color:var(--text-muted);">${s.platform} • ${s.date} • Status: ${s.status}</small>
+        </div>
+        <button class="btn danger small" onclick="deleteItem('schedules', ${s.id})"><i class="fas fa-trash"></i></button>
+      </div>
+    `).join('') || '<p style="color:var(--text-muted);">Belum ada jadwal.</p>';
+  }
+
+  function loadCustomers() {
+    const list = document.getElementById('customersList');
+    list.innerHTML = db.customers.map(c => `
+      <div class="list-item">
+        <div>
+          <h4 style="margin-bottom:4px;">${c.name}</h4>
+          <small style="color:var(--text-muted);">${c.phone} • ${c.product} • <b>${c.status}</b></small>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <a href="https://wa.me/${c.phone}" target="_blank" class="btn success small"><i class="fab fa-whatsapp"></i></a>
+          <button class="btn danger small" onclick="deleteItem('customers', ${c.id})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('') || '<p style="color:var(--text-muted);">Belum ada pelanggan.</p>';
+  }
+
+  function loadSettings() {
+    document.getElementById('waNumber').value = db.settings.wa;
+    document.getElementById('businessName').value = db.settings.name;
+    document.getElementById('businessArea').value = db.settings.area;
+  }
+
+  // --- ACTIONS ---
+  function addProduct() {
+    db.products.push({
+      id: Date.now(),
+      name: pName.value, price: pPrice.value, min: pMin.value, img: pImage.value, desc: pDesc.value
+    });
+    closeModal('productModal');
+    loadProducts(); loadDashboard();
+  }
+
+  function addAd() {
+    db.ads.push({
+      id: Date.now(),
+      title: aTitle.value, platform: aPlatform.value, caption: aCaption.value
+    });
+    closeModal('adModal');
+    loadAds(); loadDashboard();
+  }
+
+  function addSchedule() {
+    db.schedules.push({
+      id: Date.now(),
+      title: sTitle.value, platform: sPlatform.value, date: sDate.value, status: sStatus.value
+    });
+    closeModal('scheduleModal');
+    loadSchedules(); loadDashboard();
+  }
+
+  function addCustomer() {
+    db.customers.push({
+      id: Date.now(),
+      name: cName.value, phone: cPhone.value, product: cProduct.value, status: cStatus.value, note: cNote.value
+    });
+    closeModal('customerModal');
+    loadCustomers(); loadDashboard();
+  }
+
+  function deleteItem(type, id) {
+    if(confirm('Yakin hapus data ini?')) {
+      db[type] = db[type].filter(item => item.id !== id);
+      if(type === 'products') loadProducts();
+      if(type === 'ads') loadAds();
+      if(type === 'schedules') loadSchedules();
+      if(type === 'customers') loadCustomers();
+      loadDashboard();
+    }
+  }
+
+  function saveSettings() {
+    db.settings.wa = document.getElementById('waNumber').value;
+    db.settings.name = document.getElementById('businessName').value;
+    db.settings.area = document.getElementById('businessArea').value;
+    document.getElementById('settingsMsg').innerText = "Pengaturan berhasil disimpan!";
+    setTimeout(() => document.getElementById('settingsMsg').innerText = "", 3000);
+    loadDashboard();
+  }
+
+  function generateAd() {
+    const p = document.getElementById('gProduct').value || "[Jenis Produk]";
+    const t = document.getElementById('gTarget').value || "[Target Pelanggan]";
+    const b = document.getElementById('gBenefit').value || "[Keunggulan]";
+    const pr = document.getElementById('gPromo').value || "[Harga/Promo]";
+    const s = document.getElementById('gStyle').value;
+
+    let stylePrefix = "";
+    if(s.includes("Agresif")) stylePrefix = "�️ PROMO SPESIAL HARI INI! 🚀\n";
+    if(s.includes("Santai")) stylePrefix = "Halosobat ECO SPORT! 👋\n";
+    if(s.includes("WhatsApp")) stylePrefix = "";
+
+    const text = `${stylePrefix}Ada ${p} nih buat ${t}! 🏆🔥\n\nKenapa harus pilih kita?\n✅ ${b}\n✅ Harga bersahabat\n✅ Pengerjaan cepat & rapi\n\n💰 ${pr}\n\nJangan sampe kehabisan! Langsung chat admin sekarang untuk pemesanan & custom desain. 📲\n\n#EcoSport #JerseyCustom #KonveksiBerkualitas`;
+    
+    document.getElementById('generated').value = text;
+  }
+
+  function copyGenerated() {
+    const text = document.getElementById('generated');
+    text.select();
+    document.execCommand('copy');
+    alert("Caption berhasil di-copy!");
+  }
+
+  function saveGenerated() {
+    const text = document.getElementById('generated').value;
+    if(!text) return alert("Generate iklan dulu!");
+    db.ads.push({ id: Date.now(), title: "Caption Generator", platform: "Umum", caption: text });
+    loadAds(); loadDashboard();
+    alert("Materi iklan disimpan!");
+  }
+
+  // --- INIT ---
+  document.getElementById('loginBtn').addEventListener('click', login);
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+</script>
+</body>
+</html>
